@@ -1,0 +1,42 @@
+---
+title: "Gerenton_Pierre_Figure_ggplot"
+author: "Gérenton Pierre"
+date: "2022-09-29"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# TP de VDB : utilisation de ggplot
+
+Durant le TP sur ggplot, nous avons du créer un graphique avec ggplot. Il devait expliquer l'évolution des distances inter-dimère dans le transporteur membranaire ABC BmrA, dont le rôle est le passage de molécule d'une part et de l'autre de la membrane plasmique. Il est composé de plusieurs hélices $\alpha$. Les monomères sont nommés A et B avec les hélices 1 et 6.
+
+```{r import}
+# Import library
+
+library(ggplot2)
+library(reshape)
+
+# Import data
+
+D_inter=read.table("Distances_inter.txt")
+
+# Figure generation
+
+D_inter_melt = melt(D_inter,id.vars = c("Time","run"), variable_name = "distance")
+ggplot(data = D_inter_melt, aes(value, col=distance)) + 
+  geom_density() + 
+  guides(color = "none") +
+  geom_vline(data = D_inter_melt[D_inter_melt$Time==0.0,], aes(xintercept=value, col=distance)) +
+  facet_grid(cols=vars(distance),rows=vars(run), labeller = label_both) +
+  ggtitle('Density of the distance between 2 helices in BrmA') +
+  xlab("Distance") + ylab("Density")
+```
+
+La ligne verticale représente la distance au début de l'observation, et chaque run est un réplicat. Les couleurs ne représentent rien, elles servent juste à mieux séparer chaque colonne visuellement. 
+
+On observe que dans tous les cas, les distances entre les hélices se réduisent. Cela cause la fermeture du transporteur au niveau de la membrane plasmique (extérieur). On observe aussi que la distance 6A-6B est bien plus grande que la distance 1A-1B. Ce sont les distances diagonales. Les hélices forment donc un losange plutôt qu'un carré.
